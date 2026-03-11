@@ -1,0 +1,65 @@
+{
+  "name": "nestjs-session-auth",
+  "version": "1.0.0",
+  "description": "Plug-and-play NestJS session-based authentication with RBAC, Google OAuth and JWT password-reset — built by Wilfried Musanzi @ CINOLU",
+  "author": "Wilfried Musanzi <wilfried@cinolu.org>",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "nestjs",
+    "auth",
+    "session",
+    "rbac",
+    "passport",
+    "google-oauth",
+    "jwt"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wmusanzi/nestjs-session-auth"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "build:watch": "tsc -p tsconfig.build.json --watch",
+    "lint": "eslint \"src/**/*.ts\" --fix",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.0.0 || ^11.0.0",
+    "@nestjs/core": "^10.0.0 || ^11.0.0",
+    "@nestjs/jwt": "^10.0.0 || ^11.0.0",
+    "@nestjs/passport": "^10.0.0 || ^11.0.0",
+    "passport": "^0.6.0 || ^0.7.0",
+    "passport-local": "^1.0.0",
+    "reflect-metadata": "^0.2.0",
+    "rxjs": "^7.0.0"
+  },
+  "peerDependenciesMeta": {
+    "passport-google-oauth20": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/core": "^11.0.0",
+    "@nestjs/jwt": "^11.0.0",
+    "@nestjs/passport": "^11.0.0",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "@types/passport": "^1.0.0",
+    "@types/passport-google-oauth20": "^2.0.0",
+    "@types/passport-local": "^1.0.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
+    "reflect-metadata": "^0.2.0",
+    "rxjs": "^7.0.0",
+    "typescript": "^5.0.0"
+  }
+}
