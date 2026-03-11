@@ -2,22 +2,22 @@
 
 > Plug-and-play NestJS **session-based authentication** with **RBAC**, **Google OAuth2** and **JWT password-reset** — clean, typed and ready to publish.
 
-Built by [Wilfried Musanzi](https://github.com/wmusanzi) @ [CINOLU](https://cinolu.org).
+Built by [Wilfried Musanzi](https://github.com/musanzi).
 
 ---
 
 ## Features
 
-| Feature | Description |
-|---|---|
-| 🔐 Session auth | Passport.js session guard — protect every route by default |
-| 🏷️ `@Public()` | Opt-out decorator for public routes |
-| 👤 `@CurrentUser()` | Param decorator to inject the authenticated user |
-| 🛡️ RBAC | Role-Based Access Control with per-module policy registration |
-| 🔑 `@Rbac()` | Decorator to declare resource/action/possession requirements |
-| 🌐 Google OAuth2 | Abstract strategy ready to extend |
-| 🔒 Local strategy | Abstract email+password strategy ready to extend |
-| 📦 `forRoot` / `forFeature` | NestJS-idiomatic dynamic module API |
+| Feature                     | Description                                                   |
+| --------------------------- | ------------------------------------------------------------- |
+| 🔐 Session auth             | Passport.js session guard — protect every route by default    |
+| 🏷️ `@Public()`              | Opt-out decorator for public routes                           |
+| 👤 `@CurrentUser()`         | Param decorator to inject the authenticated user              |
+| 🛡️ RBAC                     | Role-Based Access Control with per-module policy registration |
+| 🔑 `@Rbac()`                | Decorator to declare resource/action requirements            |
+| 🌐 Google OAuth2            | Abstract strategy ready to extend                             |
+| 🔒 Local strategy           | Abstract email+password strategy ready to extend              |
+| 📦 `forRoot` / `forFeature` | NestJS-idiomatic dynamic module API                           |
 
 ---
 
@@ -50,11 +50,11 @@ npm install -D @types/passport-google-oauth20
 ### 1. Bootstrap (`main.ts`)
 
 ```ts
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { ConfigService } from '@nestjs/config';
-import session from 'express-session';
-import passport from 'passport';
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { ConfigService } from "@nestjs/config";
+import session from "express-session";
+import passport from "passport";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -62,13 +62,13 @@ async function bootstrap() {
 
   app.use(
     session({
-      secret: config.get('SESSION_SECRET'),
+      secret: config.get("SESSION_SECRET"),
       resave: false,
       saveUninitialized: false,
       cookie: {
         httpOnly: true,
-        sameSite: 'strict',
-        secure: config.get('NODE_ENV') === 'production',
+        sameSite: "strict",
+        secure: config.get("NODE_ENV") === "production",
         maxAge: 86_400_000, // 1 day
       },
     }),
@@ -76,7 +76,7 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  await app.listen(config.get('PORT', 3000));
+  await app.listen(config.get("PORT", 3000));
 }
 bootstrap();
 ```
@@ -84,10 +84,14 @@ bootstrap();
 ### 2. App Module
 
 ```ts
-import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
-import { SessionAuthModule, SessionAuthGuard, RbacGuard } from 'nestjs-session-auth';
-import { ADMIN_POLICY } from './rbac/admin.policy';
+import { Module } from "@nestjs/common";
+import { APP_GUARD } from "@nestjs/core";
+import {
+  SessionAuthModule,
+  SessionAuthGuard,
+  RbacGuard,
+} from "nestjs-session-auth";
+import { ADMIN_POLICY } from "./rbac/admin.policy";
 
 @Module({
   imports: [
@@ -99,7 +103,7 @@ import { ADMIN_POLICY } from './rbac/admin.policy';
   ],
   providers: [
     { provide: APP_GUARD, useClass: SessionAuthGuard }, // blocks unauthenticated requests
-    { provide: APP_GUARD, useClass: RbacGuard },        // enforces @Rbac() annotations
+    { provide: APP_GUARD, useClass: RbacGuard }, // enforces @Rbac() annotations
   ],
 })
 export class AppModule {}
@@ -113,20 +117,20 @@ export class AppModule {}
 
 ```ts
 // posts/posts-rbac.policy.ts
-import { ModuleRbacPolicy } from 'nestjs-session-auth';
+import { ModuleRbacPolicy } from "nestjs-session-auth";
 
 export const POSTS_RBAC: ModuleRbacPolicy = {
-  module: 'posts',
+  module: "posts",
   grants: [
     {
-      roles: ['admin', 'editor'],
-      actions: ['create', 'update', 'delete'],
-      resources: ['posts'],
+      roles: ["admin", "editor"],
+      actions: ["create", "update", "delete"],
+      resources: ["posts"],
     },
     {
-      roles: ['user'],
-      action: 'read',
-      resources: ['posts'],
+      roles: ["user"],
+      action: "read",
+      resources: ["posts"],
     },
   ],
 };
@@ -136,9 +140,9 @@ export const POSTS_RBAC: ModuleRbacPolicy = {
 
 ```ts
 // posts/posts.module.ts
-import { Module } from '@nestjs/common';
-import { SessionAuthModule } from 'nestjs-session-auth';
-import { POSTS_RBAC } from './posts-rbac.policy';
+import { Module } from "@nestjs/common";
+import { SessionAuthModule } from "nestjs-session-auth";
+import { POSTS_RBAC } from "./posts-rbac.policy";
 
 @Module({
   imports: [SessionAuthModule.forFeature([POSTS_RBAC])],
@@ -170,13 +174,11 @@ export class PostsController {
 
 ```ts
 // rbac/admin.policy.ts
-import { ModuleRbacPolicy } from 'nestjs-session-auth';
+import { ModuleRbacPolicy } from "nestjs-session-auth";
 
 export const ADMIN_POLICY: ModuleRbacPolicy = {
-  module: 'system',
-  grants: [
-    { roles: ['admin'], actions: ['manage'], resources: ['*'] },
-  ],
+  module: "system",
+  grants: [{ roles: ["admin"], actions: ["manage"], resources: ["*"] }],
 };
 ```
 
@@ -186,9 +188,9 @@ export const ADMIN_POLICY: ModuleRbacPolicy = {
 
 ```ts
 // auth/local.strategy.ts
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { LocalAuthStrategy } from 'nestjs-session-auth';
-import { AuthService } from './auth.service';
+import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { LocalAuthStrategy } from "nestjs-session-auth";
+import { AuthService } from "./auth.service";
 
 @Injectable()
 export class LocalStrategy extends LocalAuthStrategy {
@@ -198,7 +200,7 @@ export class LocalStrategy extends LocalAuthStrategy {
 
   async validate(email: string, password: string) {
     const user = await this.authService.validateUser(email, password);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    if (!user) throw new UnauthorizedException("Invalid credentials");
     return user;
   }
 }
@@ -206,12 +208,12 @@ export class LocalStrategy extends LocalAuthStrategy {
 
 ```ts
 // auth/auth.controller.ts
-import { Controller, Post, Req, UseGuards } from '@nestjs/common';
-import { LocalAuthGuard, Public } from 'nestjs-session-auth';
+import { Controller, Post, Req, UseGuards } from "@nestjs/common";
+import { LocalAuthGuard, Public } from "nestjs-session-auth";
 
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
-  @Post('signin')
+  @Post("signin")
   @Public()
   @UseGuards(LocalAuthGuard) // ← triggers LocalStrategy.validate()
   signIn(@Req() req: Request) {
@@ -226,22 +228,34 @@ export class AuthController {
 
 ```ts
 // auth/google.strategy.ts
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { GoogleAuthStrategy, GoogleProfile, GoogleVerifyCallback } from 'nestjs-session-auth';
-import { AuthService } from './auth.service';
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import {
+  GoogleAuthStrategy,
+  GoogleProfile,
+  GoogleVerifyCallback,
+} from "nestjs-session-auth";
+import { AuthService } from "./auth.service";
 
 @Injectable()
 export class GoogleStrategy extends GoogleAuthStrategy {
-  constructor(private authService: AuthService, config: ConfigService) {
+  constructor(
+    private authService: AuthService,
+    config: ConfigService,
+  ) {
     super({
-      clientID:     config.get('GOOGLE_CLIENT_ID'),
-      clientSecret: config.get('GOOGLE_SECRET'),
-      callbackURL:  config.get('GOOGLE_REDIRECT_URI'),
+      clientID: config.get("GOOGLE_CLIENT_ID"),
+      clientSecret: config.get("GOOGLE_SECRET"),
+      callbackURL: config.get("GOOGLE_REDIRECT_URI"),
     });
   }
 
-  async validate(_at: string, _rt: string, profile: GoogleProfile, done: GoogleVerifyCallback) {
+  async validate(
+    _at: string,
+    _rt: string,
+    profile: GoogleProfile,
+    done: GoogleVerifyCallback,
+  ) {
     const user = await this.authService.findOrCreateFromGoogle(profile);
     done(null, user);
   }
@@ -275,13 +289,15 @@ The library ships a `DefaultSessionSerializer` that stores the full user object 
 
 ```ts
 // auth/my-session.serializer.ts
-import { Injectable } from '@nestjs/common';
-import { PassportSerializer } from '@nestjs/passport';
-import { UsersService } from '../users/users.service';
+import { Injectable } from "@nestjs/common";
+import { PassportSerializer } from "@nestjs/passport";
+import { UsersService } from "../users/users.service";
 
 @Injectable()
 export class MySessionSerializer extends PassportSerializer {
-  constructor(private usersService: UsersService) { super(); }
+  constructor(private usersService: UsersService) {
+    super();
+  }
 
   serializeUser(user: User, done: Function) {
     done(null, user.id); // store only the ID
@@ -295,9 +311,11 @@ export class MySessionSerializer extends PassportSerializer {
 ```
 
 Provide it in your `AuthModule`:
+
 ```ts
-providers: [MySessionSerializer]
+providers: [MySessionSerializer];
 ```
+
 Passport will automatically pick it up.
 
 ---
@@ -306,44 +324,43 @@ Passport will automatically pick it up.
 
 ### Module
 
-| Method | Description |
-|---|---|
-| `SessionAuthModule.forRoot(options?)` | Import once in `AppModule`. Registers the global registry + optional system policies. |
-| `SessionAuthModule.forFeature(policies)` | Import in any feature module to register its RBAC policies. |
+| Method                                   | Description                                                                           |
+| ---------------------------------------- | ------------------------------------------------------------------------------------- |
+| `SessionAuthModule.forRoot(options?)`    | Import once in `AppModule`. Registers the global registry + optional system policies. |
+| `SessionAuthModule.forFeature(policies)` | Import in any feature module to register its RBAC policies.                           |
 
 ### Guards
 
-| Guard | Purpose |
-|---|---|
+| Guard              | Purpose                                                                      |
+| ------------------ | ---------------------------------------------------------------------------- |
 | `SessionAuthGuard` | Global auth gate — checks `req.isAuthenticated()`. Skips `@Public()` routes. |
-| `RbacGuard` | Evaluates `@Rbac()` annotations against user roles. |
-| `LocalAuthGuard` | Triggers Passport local strategy + establishes session. |
-| `GoogleAuthGuard` | Triggers Passport Google strategy + establishes session. |
+| `RbacGuard`        | Evaluates `@Rbac()` annotations against user roles.                          |
+| `LocalAuthGuard`   | Triggers Passport local strategy + establishes session.                      |
+| `GoogleAuthGuard`  | Triggers Passport Google strategy + establishes session.                     |
 
 ### Decorators
 
-| Decorator | Signature | Description |
-|---|---|---|
-| `@Public()` | `() => MethodDecorator` | Mark a route as public (skip auth). |
-| `@CurrentUser()` | `(key?: string) => ParameterDecorator` | Inject `req.user` or a specific property. |
-| `@Rbac()` | `(...requirements: RoleRequirement[]) => MethodDecorator` | Attach RBAC requirements. |
+| Decorator        | Signature                                                 | Description                               |
+| ---------------- | --------------------------------------------------------- | ----------------------------------------- |
+| `@Public()`      | `() => MethodDecorator`                                   | Mark a route as public (skip auth).       |
+| `@CurrentUser()` | `(key?: string) => ParameterDecorator`                    | Inject `req.user` or a specific property. |
+| `@Rbac()`        | `(...requirements: RoleRequirement[]) => MethodDecorator` | Attach RBAC requirements.                 |
 
 ### Strategies (abstract base classes)
 
-| Class | Base Passport strategy |
-|---|---|
-| `LocalAuthStrategy` | `passport-local` — override `validate(email, password)` |
+| Class                | Base Passport strategy                                                 |
+| -------------------- | ---------------------------------------------------------------------- |
+| `LocalAuthStrategy`  | `passport-local` — override `validate(email, password)`                |
 | `GoogleAuthStrategy` | `passport-google-oauth20` — override `validate(at, rt, profile, done)` |
 
 ### RBAC types
 
-| Type | Description |
-|---|---|
-| `ModuleRbacPolicy` | A named group of `RbacGrant` entries |
-| `RbacGrant` | Maps roles → actions → resources |
-| `RoleRequirement` | The requirement placed on a route via `@Rbac()` |
-| `RbacAction` | `'create' \| 'read' \| 'update' \| 'delete' \| 'manage'` |
-| `RbacPossession` | `'any' \| 'own'` |
+| Type               | Description                                              |
+| ------------------ | -------------------------------------------------------- |
+| `ModuleRbacPolicy` | A named group of `RbacGrant` entries                     |
+| `RbacGrant`        | Maps roles → actions → resources                         |
+| `RoleRequirement`  | The requirement placed on a route via `@Rbac()`          |
+| `RbacAction`       | `'create' \| 'read' \| 'update' \| 'delete' \| 'manage'` |
 
 ---
 

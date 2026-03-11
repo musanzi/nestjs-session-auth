@@ -1,16 +1,7 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// RBAC Policy types
-// ─────────────────────────────────────────────────────────────────────────────
-
 /**
  * The four CRUD actions plus a wildcard "manage" that grants all.
  */
 export type RbacAction = 'create' | 'read' | 'update' | 'delete' | 'manage';
-
-/**
- * Whether the grant applies to any resource or only resources owned by the user.
- */
-export type RbacPossession = 'own' | 'any';
 
 /**
  * A single requirement placed on a route handler via @Rbac().
@@ -20,8 +11,6 @@ export interface RoleRequirement {
   resource: string;
   /** The action being performed. */
   action: RbacAction;
-  /** Defaults to "any". */
-  possession?: RbacPossession;
 }
 
 /**
@@ -36,8 +25,6 @@ export interface RbacGrant {
   action?: RbacAction;
   /** Resources this grant covers. Use "*" to mean all resources. */
   resources: string[];
-  /** Defaults to "any". */
-  possession?: RbacPossession;
 }
 
 /**
@@ -49,7 +36,7 @@ export interface RbacGrant {
  *   module: 'posts',
  *   grants: [
  *     { roles: ['admin', 'editor'], actions: ['create', 'update', 'delete'], resources: ['posts'] },
- *     { roles: ['user'],             action:  'read',                         resources: ['posts'] },
+ *     { roles: ['user'],            action:  'read',                         resources: ['posts'] },
  *   ],
  * };
  * ```
@@ -63,30 +50,22 @@ export interface ModuleRbacPolicy {
 // Internal runtime representation
 // ─────────────────────────────────────────────────────────────────────────────
 
-type PermissionSet = { any: Set<string>; own: Set<string> };
-type RolePolicy = Record<RbacAction, PermissionSet>;
+type RolePolicy = Record<RbacAction, Set<string>>;
 
 const createEmptyPolicy = (): RolePolicy => ({
-  create: { any: new Set(), own: new Set() },
-  read: { any: new Set(), own: new Set() },
-  update: { any: new Set(), own: new Set() },
-  delete: { any: new Set(), own: new Set() },
-  manage: { any: new Set(), own: new Set() },
+  create: new Set(),
+  read: new Set(),
+  update: new Set(),
+  delete: new Set(),
+  manage: new Set(),
 });
 
-const buildRolePolicyMap = (
-  modulePolicies: ModuleRbacPolicy[],
-): Map<string, RolePolicy> => {
+const buildRolePolicyMap = (modulePolicies: ModuleRbacPolicy[]): Map<string, RolePolicy> => {
   const map = new Map<string, RolePolicy>();
 
   for (const modulePolicy of modulePolicies) {
     for (const grant of modulePolicy.grants) {
-      const possession: RbacPossession = grant.possession ?? 'any';
-      const actions = grant.actions?.length
-        ? grant.actions
-        : grant.action
-        ? [grant.action]
-        : [];
+      const actions = grant.actions?.length ? grant.actions : grant.action ? [grant.action] : [];
       if (!actions.length) continue;
 
       for (const role of grant.roles) {
@@ -94,7 +73,7 @@ const buildRolePolicyMap = (
         const rolePolicy = map.get(role)!;
         for (const action of actions) {
           for (const resource of grant.resources) {
-            rolePolicy[action][possession].add(resource);
+            rolePolicy[action].add(resource);
           }
         }
       }
@@ -103,23 +82,14 @@ const buildRolePolicyMap = (
   return map;
 };
 
-const hasPermission = (
-  policy: RolePolicy,
-  requirement: RoleRequirement,
-): boolean => {
-  const possession = requirement.possession ?? 'any';
+const hasPermission = (policy: RolePolicy, requirement: RoleRequirement): boolean => {
   const { resource, action } = requirement;
-  const manage = policy.manage;
-  const grants = policy[action];
-
   // "manage *" = superuser
-  if (manage.any.has('*')) return true;
+  if (policy.manage.has('*')) return true;
   // "manage <resource>"
-  if (manage.any.has(resource)) return true;
-  // exact action on any
-  if (grants.any.has(resource)) return true;
-  // exact action on own
-  if (possession === 'own' && grants.own.has(resource)) return true;
+  if (policy.manage.has(resource)) return true;
+  // exact action on resource
+  if (policy[action].has(resource)) return true;
   return false;
 };
 

@@ -15,10 +15,9 @@ export const ROLE_REQUIREMENTS_KEY = 'session_auth:roleRequirements';
  * @Rbac({ resource: 'articles', action: 'create' })
  * create(@Body() dto: CreateArticleDto) { ... }
  *
- * // Require ownership check
- * @Patch(':id')
- * @Rbac({ resource: 'articles', action: 'update', possession: 'own' })
- * update(...) { ... }
+ * @Delete(':id')
+ * @Rbac({ resource: 'articles', action: 'delete' })
+ * remove(@Param('id') id: string) { ... }
  * ```
  */
 export const Rbac = (...requirements: RoleRequirement[]) =>
