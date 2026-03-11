@@ -1,5 +1,5 @@
 {
-  "name": "nestjs-session-auth",
+  "name": "@musanzi/nestjs-session-auth",
   "version": "1.0.0",
   "description": "Plug-and-play NestJS session-based authentication with RBAC, Google OAuth and JWT password-reset — built by Wilfried Musanzi",
   "author": "Wilfried Musanzi <musanziw.m@gmail.com>",

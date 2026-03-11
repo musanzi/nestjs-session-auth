@@ -24,9 +24,9 @@ Built by [Wilfried Musanzi](https://github.com/musanzi).
 ## Installation
 
 ```bash
-npm install nestjs-session-auth
+npm install @musanzi/nestjs-session-auth
 # or
-pnpm add nestjs-session-auth
+pnpm add @musanzi/nestjs-session-auth
 ```
 
 ### Required peer dependencies
