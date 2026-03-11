@@ -14,7 +14,7 @@ Built by [Wilfried Musanzi](https://github.com/musanzi).
 | 🏷️ `@Public()`              | Opt-out decorator for public routes                           |
 | 👤 `@CurrentUser()`         | Param decorator to inject the authenticated user              |
 | 🛡️ RBAC                     | Role-Based Access Control with per-module policy registration |
-| 🔑 `@Rbac()`                | Decorator to declare resource/action requirements            |
+| 🔑 `@Rbac()`                | Decorator to declare resource/action requirements             |
 | 🌐 Google OAuth2            | Abstract strategy ready to extend                             |
 | 🔒 Local strategy           | Abstract email+password strategy ready to extend              |
 | 📦 `forRoot` / `forFeature` | NestJS-idiomatic dynamic module API                           |
@@ -366,4 +366,4 @@ Passport will automatically pick it up.
 
 ## License
 
-MIT © [Wilfried Musanzi](https://github.com/wmusanzi)
+MIT ©[Wilfried Musanzi](https://github.com/musanzi)
