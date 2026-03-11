@@ -90,7 +90,7 @@ import {
   SessionAuthModule,
   SessionAuthGuard,
   RbacGuard,
-} from '@musanzi/nestjs-session-auth';
+} from "@musanzi/nestjs-session-auth";
 import { ADMIN_POLICY } from "./rbac/admin.policy";
 
 @Module({
@@ -117,7 +117,7 @@ export class AppModule {}
 
 ```ts
 // posts/posts-rbac.policy.ts
-import { ModuleRbacPolicy } from '@musanzi/nestjs-session-auth';
+import { ModuleRbacPolicy } from "@musanzi/nestjs-session-auth";
 
 export const POSTS_RBAC: ModuleRbacPolicy = {
   module: "posts",
@@ -141,7 +141,7 @@ export const POSTS_RBAC: ModuleRbacPolicy = {
 ```ts
 // posts/posts.module.ts
 import { Module } from "@nestjs/common";
-import { SessionAuthModule } from '@musanzi/nestjs-session-auth';
+import { SessionAuthModule } from "@musanzi/nestjs-session-auth";
 import { POSTS_RBAC } from "./posts-rbac.policy";
 
 @Module({
@@ -174,11 +174,11 @@ export class PostsController {
 
 ```ts
 // rbac/admin.policy.ts
-import { ModuleRbacPolicy } from '@musanzi/nestjs-session-auth';
+import { ModuleRbacPolicy } from "@musanzi/nestjs-session-auth";
 
 export const ADMIN_POLICY: ModuleRbacPolicy = {
   module: "system",
-  grants: [{ roles: ["admin"], actions: ["manage"], resources: ["*"] }],
+  grants: [{ roles: ["admin"], actions: ["manage"] }],
 };
 ```
 
@@ -189,7 +189,7 @@ export const ADMIN_POLICY: ModuleRbacPolicy = {
 ```ts
 // auth/local.strategy.ts
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { LocalAuthStrategy } from '@musanzi/nestjs-session-auth';
+import { LocalAuthStrategy } from "@musanzi/nestjs-session-auth";
 import { AuthService } from "./auth.service";
 
 @Injectable()
@@ -209,7 +209,7 @@ export class LocalStrategy extends LocalAuthStrategy {
 ```ts
 // auth/auth.controller.ts
 import { Controller, Post, Req, UseGuards } from "@nestjs/common";
-import { LocalAuthGuard, Public } from '@musanzi/nestjs-session-auth';
+import { LocalAuthGuard, Public } from "@musanzi/nestjs-session-auth";
 
 @Controller("auth")
 export class AuthController {
@@ -234,7 +234,7 @@ import {
   GoogleAuthStrategy,
   GoogleProfile,
   GoogleVerifyCallback,
-} from '@musanzi/nestjs-session-auth';
+} from "@musanzi/nestjs-session-auth";
 import { AuthService } from "./auth.service";
 
 @Injectable()
