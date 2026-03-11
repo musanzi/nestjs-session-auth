@@ -36,7 +36,7 @@ const createPolicyProvider = (policy: ModuleRbacPolicy): Provider => ({
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * The root module for `nestjs-session-auth`.
+ * The root module for `@musanzi/nestjs-session-auth`.
  *
  * ## Quick start
  *
