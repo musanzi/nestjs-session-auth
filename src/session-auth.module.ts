@@ -3,12 +3,6 @@ import { PassportModule } from '@nestjs/passport';
 import { RbacRegistryService } from './rbac/rbac-registry.service';
 import { ModuleRbacPolicy } from './rbac/rbac-policy';
 import { DefaultSessionSerializer } from './serializers/session.serializer';
-import { SessionAuthGuard } from './guards/session-auth.guard';
-import { RbacGuard } from './guards/rbac.guard';
-
-// ─────────────────────────────────────────────────────────────────────────────
-// forRoot options
-// ─────────────────────────────────────────────────────────────────────────────
 
 export interface SessionAuthModuleOptions {
   /**
@@ -18,10 +12,6 @@ export interface SessionAuthModuleOptions {
   policies?: ModuleRbacPolicy[];
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// forFeature helper — registers module-level RBAC policies
-// ─────────────────────────────────────────────────────────────────────────────
-
 const createPolicyProvider = (policy: ModuleRbacPolicy): Provider => ({
   provide: `SESSION_AUTH_RBAC_POLICY:${policy.module}`,
   inject: [RbacRegistryService],
@@ -30,10 +20,6 @@ const createPolicyProvider = (policy: ModuleRbacPolicy): Provider => ({
     return true;
   },
 });
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Module
-// ─────────────────────────────────────────────────────────────────────────────
 
 /**
  * The root module for `@musanzi/nestjs-session-auth`.
@@ -45,7 +31,7 @@ const createPolicyProvider = (policy: ModuleRbacPolicy): Provider => ({
  * @Module({
  *   imports: [
  *     SessionAuthModule.forRoot({
- *       policies: [ADMIN_POLICY], // optional system-wide policies
+ *       policies: [ADMIN_POLICY],
  *     }),
  *   ],
  *   providers: [
@@ -68,8 +54,12 @@ const createPolicyProvider = (policy: ModuleRbacPolicy): Provider => ({
 @Module({})
 export class SessionAuthModule {
   /**
-   * Import once in your root `AppModule`. Registers the shared registry and
-   * any system-level RBAC policies.
+   * Import once in your root `AppModule`. Registers the shared registry,
+   * Passport session support, and any system-level RBAC policies.
+   *
+   * NOTE: Guards (`SessionAuthGuard`, `RbacGuard`) are NOT registered here —
+   * wire them yourself via `APP_GUARD` in your `AppModule` so NestJS can
+   * inject `Reflector` correctly.
    */
   static forRoot(options: SessionAuthModuleOptions = {}): DynamicModule {
     const policyProviders = (options.policies ?? []).map(createPolicyProvider);
@@ -81,11 +71,9 @@ export class SessionAuthModule {
       providers: [
         RbacRegistryService,
         DefaultSessionSerializer,
-        SessionAuthGuard,
-        RbacGuard,
         ...policyProviders,
       ],
-      exports: [RbacRegistryService, DefaultSessionSerializer, SessionAuthGuard, RbacGuard],
+      exports: [RbacRegistryService, DefaultSessionSerializer],
     };
   }
 
