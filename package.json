@@ -1,6 +1,6 @@
 {
   "name": "nestjs-session-auth",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Plug-and-play NestJS session-based authentication with RBAC, Google OAuth and JWT password-reset — built by Wilfried Musanzi",
   "author": "Wilfried Musanzi <musanziw.m@gmail.com>",
   "license": "MIT",
