@@ -1,6 +1,6 @@
 # nestjs-session-auth
 
-> Plug-and-play NestJS **session-based authentication** with **RBAC**, **Google OAuth2** and **JWT password-reset** — clean, typed and ready to publish.
+> Plug-and-play NestJS **session-based authentication** with **RBAC**, **Google OAuth2** and **JWT password-reset** — clean, typed and ready to use.
 
 Built by [Wilfried Musanzi](https://github.com/musanzi).
 
@@ -366,4 +366,4 @@ Passport will automatically pick it up.
 
 ## License
 
-MIT ©[Wilfried Musanzi](https://github.com/musanzi)
+MIT© [Wilfried Musanzi](https://github.com/musanzi)
